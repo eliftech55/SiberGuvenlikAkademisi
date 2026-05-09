@@ -1,0 +1,11 @@
+{
+    "rooms": [
+        {"id": "email", "name": "Güvenli E-posta Simülatörü", "scene": "EmailSimulator", "x": 200, "y": 300},
+        {"id": "privacy", "name": "Gizlilik Yapılandırıcı", "scene": "PrivacyConfigurator", "x": 400, "y": 300},
+        {"id": "url", "name": "URL Sörf Oyunu", "scene": "URLSurf", "x": 600, "y": 300},
+        {"id": "phishing", "name": "Oltalama Avcısı", "scene": "PhishingPuzzle", "x": 800, "y": 300},
+        {"id": "password", "name": "Hazine Şifresi", "scene": "TreasurePassword", "x": 300, "y": 500},
+        {"id": "social", "name": "Sosyal Mühendislik", "scene": "SocialEng", "x": 500, "y": 500},
+        {"id": "malware", "name": "Zararlı Yazılım Temizliği", "scene": "MalwareFirewall", "x": 700, "y": 500}
+    ]
+}

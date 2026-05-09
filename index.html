@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siber Güvenlik Akademisi</title>
+    <link rel="stylesheet" href="./src/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body>
+    <div id="global-header">
+        <div class="header-left">
+            <div id="profile-trigger" class="header-item clickable">
+                <span class="label">⚙️ ÖĞRENCİ:</span>
+                <span id="header-codename" class="value">Aday</span>
+            </div>
+            <div class="header-item">
+                <span class="label">XP:</span>
+                <span id="header-xp" class="value">0</span>
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button id="btn-back-to-campus" class="header-button back-btn" style="display: none;">🏠 KAMPÜSE DÖN</button>
+            <button id="btn-how-to-play" class="header-button">❓ NASIL OYNANIR?</button>
+            <div class="volume-control">
+                <span id="vol-icon">🔊</span>
+                <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="0.3">
+            </div>
+            <button id="btn-logout" class="header-button logout">OTURUMU KAPAT</button>
+        </div>
+    </div>
+
+    <div id="game-container"></div>
+    
+    <div id="ui-overlay"></div>
+
+    <!-- Instruction Modal -->
+    <div id="instruction-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <h2 id="inst-title">Nasıl Oynanır?</h2>
+            <div id="inst-body"></div>
+            <button class="close-btn-footer">ANLADIM, BAŞLA!</button>
+        </div>
+    </div>
+
+    <!-- Global Profile Modal -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content profile-content-box">
+            <button class="close-profile-modal">&times;</button>
+            <h2 style="color: #00f2ff; text-align: center; border-bottom: 2px solid #00f2ff; padding-bottom: 10px;">AKADEMİ KARNESİ & LİDERLİK</h2>
+            
+            <div class="profile-grid-layout">
+                <div class="profile-section">
+                    <h3 style="color: #f3ff00;">İstatistikler</h3>
+                    <p>Kod Adı: <b id="prof-codename">Aday</b></p>
+                    <p>Toplam XP: <b id="prof-xp">0</b></p>
+                    
+                    <h3 style="color: #f3ff00; margin-top: 25px;">Karakterini Özelleştir</h3>
+                    <div id="color-picker-grid" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;">
+                        <!-- Injected via UIService -->
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="fish-type-btn cyber-button" data-type="standard">Standart</button>
+                        <button class="fish-type-btn cyber-button" data-type="skeleton">İskelet</button>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3 style="color: #f3ff00;">Liderlik Tablosu</h3>
+                    <div id="leaderboard-list-box" style="background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px; font-size: 14px; max-height: 250px; overflow-y: auto;">
+                        Yükleniyor...
+                    </div>
+                </div>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>

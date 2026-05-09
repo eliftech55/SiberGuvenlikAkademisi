@@ -1,0 +1,9 @@
+[
+    {"id": "email_expert", "name": "Email Expert", "desc": "Secured communications."},
+    {"id": "privacy_pro", "name": "Privacy Pro", "desc": "Mastered social settings."},
+    {"id": "url_inspector", "name": "URL Inspector", "desc": "Spotted the fakes."},
+    {"id": "phishing_hunter", "name": "Phishing Hunter", "desc": "Protected the catch."},
+    {"id": "password_warden", "name": "Password Warden", "desc": "Unbreakable fortress."},
+    {"id": "social_engineer", "name": "Social Engineer", "desc": "Detected the manipulation."},
+    {"id": "firewall_guardian", "name": "Firewall Guardian", "desc": "Blocked the malware."}
+]
