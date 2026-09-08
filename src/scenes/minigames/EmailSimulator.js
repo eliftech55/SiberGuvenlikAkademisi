@@ -15,6 +15,11 @@ export class EmailSimulator extends MiniGameScene {
     }
 
     create() {
+        if (this.input?.keyboard) {
+            this.input.keyboard.clearCaptures();
+            this.input.keyboard.enabled = false;
+        }
+
         this.createBaseUI('Güvenli E-posta Simülatörü');
         const { width, height } = this.cameras.main;
 
@@ -41,7 +46,13 @@ export class EmailSimulator extends MiniGameScene {
         `;
 
         const emailInput = document.getElementById('email-input');
-        emailInput.focus();
+        if (emailInput) {
+            emailInput.focus();
+            const stopProp = (e) => e.stopPropagation();
+            emailInput.addEventListener('keydown', stopProp);
+            emailInput.addEventListener('keyup', stopProp);
+            emailInput.addEventListener('keypress', stopProp);
+        }
 
         document.getElementById('btn-create-email').onclick = () => {
             const email = emailInput.value.trim();
@@ -211,5 +222,11 @@ export class EmailSimulator extends MiniGameScene {
         riskyTemplates.forEach(t => combined.push({ ...t, isSafe: false, processed: false }));
         
         return Phaser.Utils.Array.Shuffle(combined);
+    }
+
+    shutdown() {
+        if (this.input?.keyboard) {
+            this.input.keyboard.enabled = true;
+        }
     }
 }

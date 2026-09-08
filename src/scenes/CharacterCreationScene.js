@@ -129,6 +129,14 @@ export class CharacterCreationScene extends Phaser.Scene {
             this.updatePreview();
         };
 
+        const charNameInput = document.getElementById('char-name');
+        if (charNameInput) {
+            const stopProp = (e) => e.stopPropagation();
+            charNameInput.addEventListener('keydown', stopProp);
+            charNameInput.addEventListener('keyup', stopProp);
+            charNameInput.addEventListener('keypress', stopProp);
+        }
+
         // Click on a saved account tag
         document.querySelectorAll('.saved-acc-btn').forEach(btn => {
             btn.onclick = () => {
