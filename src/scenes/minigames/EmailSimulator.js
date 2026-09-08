@@ -3,9 +3,15 @@ import { MiniGameScene } from './MiniGameScene';
 export class EmailSimulator extends MiniGameScene {
     constructor() {
         super('EmailSimulator');
+    }
+
+    init() {
+        super.init();
         this.currentPhase = 1; // 1: Creation, 2: Inbox
         this.emails = [];
         this.processedCount = 0;
+        this.targetCount = 10;
+        this.userEmail = '';
     }
 
     create() {
@@ -68,7 +74,7 @@ export class EmailSimulator extends MiniGameScene {
                         <span style="font-size: 24px;">📬</span>
                         <span style="font-weight: bold; color: #00f2ff;">GELEN KUTUSU (${this.userEmail})</span>
                     </div>
-                    <div style="font-size: 14px; color: #f3ff00; font-weight: bold;">SKOR: ${this.score} | İNCELENEN: ${this.processedCount}/20</div>
+                    <div style="font-size: 14px; color: #f3ff00; font-weight: bold;">SKOR: ${this.score} | İNCELENEN: ${this.processedCount}/${this.targetCount}</div>
                 </div>
                 
                 <!-- Email List -->
@@ -134,14 +140,21 @@ export class EmailSimulator extends MiniGameScene {
         `;
         
         const app = document.getElementById('email-app');
-        app.insertAdjacentHTML('beforeend', detailHtml);
+        if (app) app.insertAdjacentHTML('beforeend', detailHtml);
 
-        document.getElementById('close-detail').onclick = () => {
-            document.getElementById('email-detail-overlay').remove();
-        };
+        const closeBtn = document.getElementById('close-detail');
+        if (closeBtn) {
+            closeBtn.onclick = () => {
+                const det = document.getElementById('email-detail-overlay');
+                if (det) det.remove();
+            };
+        }
 
-        document.getElementById('btn-safe').onclick = () => this.handleChoice(true, email, index);
-        document.getElementById('btn-risky').onclick = () => this.handleChoice(false, email, index);
+        const btnSafe = document.getElementById('btn-safe');
+        if (btnSafe) btnSafe.onclick = () => this.handleChoice(true, email, index);
+
+        const btnRisky = document.getElementById('btn-risky');
+        if (btnRisky) btnRisky.onclick = () => this.handleChoice(false, email, index);
     }
 
     handleChoice(choiceIsSafe, email, index) {
@@ -151,7 +164,7 @@ export class EmailSimulator extends MiniGameScene {
             this.emails[index].processed = true;
             this.processedCount++;
             
-            if (this.processedCount >= 20) {
+            if (this.processedCount >= this.targetCount) {
                 document.getElementById('ui-overlay').innerHTML = '';
                 this.handleWin('email_expert');
             } else {
@@ -161,7 +174,8 @@ export class EmailSimulator extends MiniGameScene {
             this.updateScore(-50);
             this.cameras.main.shake(200, 0.01);
             alert("Hatalı karar! Bu e-posta " + (email.isSafe ? "güvenliydi." : "zararlıydı/şüpheliydi."));
-            document.getElementById('email-detail-overlay').remove();
+            const det = document.getElementById('email-detail-overlay');
+            if (det) det.remove();
         }
     }
 

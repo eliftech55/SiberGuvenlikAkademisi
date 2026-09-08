@@ -1,4 +1,4 @@
-import { getLocalProfile } from './authService';
+import { getLocalProfile, logout, getLeaderboard, updateMetaData } from './authService.js';
 
 class UIService {
     constructor() {
@@ -25,7 +25,7 @@ class UIService {
                     <ul>
                         <li><b>Kontrol:</b> Farenin ucuyla balığı yönlendir.</li>
                         <li><b>Süpürme:</b> Sol tık veya "Boşluk" tuşu ile vakumu çalıştır.</li>
-                        <li><b>Hedef:</b> 30 zararlı dosyayı (.exe, .bat, .scr, .zip) vakumla.</li>
+                        <li><b>Hedef:</b> Zararlı dosyaları (.exe, .bat, .scr, .zip) vakumla.</li>
                         <li><b>Dikkat:</b> Güvenli dosyaları vakumlarsan veya zararlıların kaçmasına izin verirsen puan kaybedersin.</li>
                     </ul>
                 `
@@ -59,7 +59,7 @@ class UIService {
                     <ul>
                         <li><b>Kırmızı Balıklar:</b> Zararlı sitelerdir. "Boşluk" tuşuyla lazer fırlatarak onları temizle.</li>
                         <li><b>Yeşil Balıklar:</b> Güvenli sitelerdir. Onlara ateş etme, serbestçe yüzmelerine izin ver.</li>
-                        <li><b>Hareket:</b> Yön (Ok) tuşlarını kullanarak her yöne hareket et.</li>
+                        <li><b>Hareket:</b> Yön (Ok) veya W,A,S,D tuşlarını kullanarak hareket et.</li>
                         <li><b>Uyarı:</b> Canını korumak için balıklara çarpmamaya dikkat et.</li>
                     </ul>
                 `
@@ -70,8 +70,8 @@ class UIService {
                     <p>Gelen kutundaki siber saldırıları durdur!</p>
                     <ul>
                         <li><b>İnceleme:</b> E-postaları açarak gönderen adresini ve içeriği kontrol et.</li>
-                        <li><b>Linkler:</b> Linklerin üzerine fareyle gelerek nereye gittiklerini kontrol et (tıklama!).</li>
-                        <li><b>Karar:</b> Şüpheli e-postaları "SPAM", güvenli olanları "GÜVENLİ" olarak işaretle.</li>
+                        <li><b>Linkler:</b> Linklerin üzerine fareyle gelerek nereye gittiklerini kontrol et.</li>
+                        <li><b>Karar:</b> Şüpheli e-postaları "GÜVENLİ DEĞİL", güvenli olanları "GÜVENLİ" olarak işaretle.</li>
                     </ul>
                 `
             },
@@ -80,9 +80,9 @@ class UIService {
                 body: `
                     <p>Siber okyanustaki güvenli kaynakları topla, oltalama tuzaklarından kaç!</p>
                     <ul>
-                        <li><b>Güvenli Balıklar (HTTPS):</b> Üzerinde güvenli bağlantı (HTTPS) olan balıklar temiz kaynaklardır. Onlara dokunarak (yakalayarak) puan ve enerji topla.</li>
-                        <li><b>Tehlikeli Balıklar (HTTP/Sahte):</b> Sahte veya güvensiz bağlantı içeren balıklardan uzak dur! Onlara çarparsan puanın azalır.</li>
-                        <li><b>Hareket:</b> Yön (Ok) tuşlarını kullanarak her yöne hareket et.</li>
+                        <li><b>Güvenli Balıklar (HTTPS):</b> Üzerinde güvenli bağlantı (HTTPS) olan balıklar temiz kaynaklardır. Onlara dokunarak puan topla.</li>
+                        <li><b>Tehlikeli Balıklar (HTTP/Sahte):</b> Sahte veya güvensiz bağlantı içeren balıklardan uzak dur!</li>
+                        <li><b>Hareket:</b> Yön (Ok) veya W,A,S,D tuşlarını kullanarak her yöne hareket et.</li>
                     </ul>
                 `
             },
@@ -92,7 +92,7 @@ class UIService {
                     <p>Profilini ve paylaşımlarını güvenli hale getir.</p>
                     <ul>
                         <li><b>Ayarlar:</b> "GİZLİLİK AYARLARI" sekmesinde en güvenli seçenekleri işaretle.</li>
-                        <li><b>Paylaşımlar:</b> "PAYLAŞIMLARIM" sekmesinde tehlikeli olabilecek mesajları (konum, şifre vb.) paylaşmayı reddet.</li>
+                        <li><b>Paylaşımlar:</b> "PAYLAŞIMLARIM" sekmesinde tehlikeli olabilecek mesajları paylaşmayı reddet.</li>
                         <li><b>Hedef:</b> Tüm alanları tamamlayarak siber koruyucu rozeti kazan.</li>
                     </ul>
                 `
@@ -101,7 +101,7 @@ class UIService {
     }
 
     init() {
-        console.log("UIService: Global Profile & Accurate Instructions Init");
+        console.log("UIService: Global UI Initialized");
         this.setupEventListeners();
         this.updateHeader();
     }
@@ -147,10 +147,9 @@ class UIService {
 
         // Add listeners
         grid.querySelectorAll('.color-circle').forEach(el => {
-            el.onclick = async () => {
+            el.onclick = () => {
                 const color = el.getAttribute('data-color');
-                const { updateMetaData } = await import('./authService');
-                await updateMetaData({ color });
+                updateMetaData({ color });
                 this.updateHeader();
                 window.dispatchEvent(new CustomEvent('fish-updated'));
             };
@@ -166,10 +165,9 @@ class UIService {
                 btn.style.background = 'transparent';
                 btn.style.color = 'var(--cyber-blue)';
             }
-            btn.onclick = async () => {
+            btn.onclick = () => {
                 const type = btn.getAttribute('data-type');
-                const { updateMetaData } = await import('./authService');
-                await updateMetaData({ type });
+                updateMetaData({ type });
                 this.updateHeader();
                 window.dispatchEvent(new CustomEvent('fish-updated'));
             };
@@ -194,6 +192,9 @@ class UIService {
                 const detailOverlay = document.getElementById('email-detail-overlay');
                 if (detailOverlay) detailOverlay.remove();
 
+                const passModal = document.getElementById('password-modal');
+                if (passModal) passModal.remove();
+
                 // 3. Resume and reset state
                 this.isInstructionsOpen = false;
                 this.isProfileOpen = false;
@@ -209,12 +210,15 @@ class UIService {
             };
         }
 
+        // Proper Logout Handler
         const btnLogout = document.getElementById('btn-logout');
         if (btnLogout) {
             btnLogout.onclick = () => {
-                if (confirm("Oturumu kapatmak istediğinize emin misiniz?")) {
-                    localStorage.removeItem('caq_user_profile');
-                    localStorage.removeItem('caq_session');
+                if (confirm("Oturumu kapatıp karakter seçim ekranına dönmek istediğinize emin misiniz?")) {
+                    logout();
+                    // Clear UI overlay
+                    const overlay = document.getElementById('ui-overlay');
+                    if (overlay) overlay.innerHTML = '';
                     window.location.reload();
                 }
             };
@@ -271,15 +275,17 @@ class UIService {
 
         const lbBox = document.getElementById('leaderboard-list-box');
         if (lbBox) {
-            lbBox.innerHTML = "Yükleniyor...";
-            const { getLeaderboard } = await import('./authService');
             const leaders = await getLeaderboard();
-            lbBox.innerHTML = leaders.map((l, i) => `
-                <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(0,242,255,0.1); ${i<3 ? 'color: #f3ff00; font-weight: bold;' : ''}">
-                    <span>${i + 1}. ${l.codename}</span>
-                    <span>${l.xp} XP</span>
-                </div>
-            `).join('');
+            if (leaders && leaders.length > 0) {
+                lbBox.innerHTML = leaders.map((l, i) => `
+                    <div style="display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(0,242,255,0.1); ${i<3 ? 'color: #f3ff00; font-weight: bold;' : ''}">
+                        <span>${i === 0 ? '🥇 ' : i === 1 ? '🥈 ' : i === 2 ? '🥉 ' : (i + 1) + '. '}${l.codename}</span>
+                        <span>${l.xp || 0} XP</span>
+                    </div>
+                `).join('');
+            } else {
+                lbBox.innerHTML = '<div style="text-align: center; color: #888; padding: 15px;">Lider tablosu henüz oluşmadı.</div>';
+            }
         }
     }
 
@@ -302,19 +308,15 @@ class UIService {
     toggleGamePause(pause) {
         if (!window.phaserGame) return;
         try {
-            // Important: getScenes(true) only returns NON-PAUSED scenes.
-            // To resume, we must look at ALL scenes or specifically target the paused ones.
             const allScenes = window.phaserGame.scene.scenes;
             allScenes.forEach(s => {
                 if (pause) {
-                    // Only pause if the scene is actually running
                     if (s.scene.isActive()) {
                         s.scene.pause();
                         if (s.physics) s.physics.pause();
                         if (s.sound) s.sound.pauseAll();
                     }
                 } else {
-                    // Resume if it's currently paused
                     if (s.scene.isPaused()) {
                         s.scene.resume();
                         if (s.physics) s.physics.resume();
@@ -322,7 +324,6 @@ class UIService {
                     }
                 }
             });
-            console.log("UIService: Global Engine State ->", pause ? "PAUSED" : "RESUMED");
         } catch (err) {
             console.error("UIService Global Pause Error:", err);
         }

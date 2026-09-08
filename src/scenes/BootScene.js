@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { getLocalProfile } from '../services/authService';
 
 export class BootScene extends Phaser.Scene {
     constructor() {
@@ -34,9 +35,6 @@ export class BootScene extends Phaser.Scene {
         // Configs
         this.load.json('badges', 'config/badges.json');
         this.load.json('skills', 'config/skills.json');
-
-        // Assets
-        this.load.image('logo', 'https://labs.phaser.io/assets/sprites/phaser3-logo.png');
 
         // Fish Pack Assets (Atlas)
         this.load.atlasXML('fish_atlas', 'assets/fishpack/fish_spritesheet.png', 'assets/fishpack/fish_spritesheet.xml');
@@ -81,6 +79,13 @@ export class BootScene extends Phaser.Scene {
                 this.sound.context.resume();
             }
         });
-        this.scene.start('CharacterCreationScene');
+
+        // If user already has an active profile, jump straight to campus HubScene!
+        const profile = getLocalProfile();
+        if (profile && profile.codename) {
+            this.scene.start('HubScene');
+        } else {
+            this.scene.start('CharacterCreationScene');
+        }
     }
 }

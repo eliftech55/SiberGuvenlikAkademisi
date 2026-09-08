@@ -8,6 +8,9 @@ export class TreasurePassword extends MiniGameScene {
     init() {
         super.init();
         this.usedPasswords = new Set();
+        this.chestsLocked = 0;
+        const oldModal = document.getElementById('password-modal');
+        if (oldModal) oldModal.remove();
     }
 
     create() {
@@ -105,6 +108,9 @@ export class TreasurePassword extends MiniGameScene {
     }
 
     createModalUI() {
+        const oldModal = document.getElementById('password-modal');
+        if (oldModal) oldModal.remove();
+
         const modal = document.createElement('div');
         modal.id = 'password-modal';
         modal.innerHTML = `

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { createProfile, checkCodenameUnique, loginWithCodename } from '../services/authService';
+import { createProfile, checkCodenameUnique, loginWithCodename, getLocalProfile, getAllLocalAccounts } from '../services/authService';
 
 export class CharacterCreationScene extends Phaser.Scene {
     constructor() {
@@ -9,6 +9,13 @@ export class CharacterCreationScene extends Phaser.Scene {
     }
 
     create() {
+        // If user already has a profile, jump straight to Hub
+        const existing = getLocalProfile();
+        if (existing && existing.codename) {
+            this.scene.start('HubScene');
+            return;
+        }
+
         const { width, height } = this.cameras.main;
 
         this.bgMain = this.add.image(width / 2, height / 2, 'bg_main').setDisplaySize(width, height);
@@ -57,18 +64,34 @@ export class CharacterCreationScene extends Phaser.Scene {
 
     setupUI() {
         const overlay = document.getElementById('ui-overlay');
+        const localAccounts = getAllLocalAccounts();
+
+        const accountsHtml = localAccounts.length > 0 ? `
+            <div style="margin-top: 10px; padding: 10px; background: rgba(0, 242, 255, 0.05); border-radius: 8px; border: 1px dashed rgba(0, 242, 255, 0.3);">
+                <div style="font-size: 11px; color: #00f2ff; margin-bottom: 5px;">KAYITLI HESAPLAR:</div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    ${localAccounts.map(a => `
+                        <button class="saved-acc-btn" data-name="${a.codename}" style="background: rgba(0,0,0,0.5); border: 1px solid #f3ff00; color: #f3ff00; padding: 3px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+                            ${a.codename} (${a.xp || 0} XP)
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        ` : '';
+
         overlay.innerHTML = `
-            <div class="hud-panel" style="position: absolute; top: 50%; left: 10%; transform: translateY(-50%); width: 380px; padding: 40px; background: rgba(0, 15, 30, 0.9); border: 3px solid #00f2ff; border-radius: 20px; color: white; box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);">
-                <h1 style="margin-top: 0; color: #f3ff00; text-transform: uppercase; letter-spacing: 3px; border-bottom: 2px solid #00f2ff; padding-bottom: 15px; font-size: 28px;">KARAKTER OLUŞTUR</h1>
+            <div class="hud-panel" style="position: absolute; top: 50%; left: 10%; transform: translateY(-50%); width: 390px; padding: 35px; background: rgba(0, 15, 30, 0.95); border: 3px solid #00f2ff; border-radius: 20px; color: white; box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);">
+                <h1 style="margin-top: 0; color: #f3ff00; text-transform: uppercase; letter-spacing: 3px; border-bottom: 2px solid #00f2ff; padding-bottom: 15px; font-size: 26px;">KARAKTER OLUŞTUR</h1>
                 
-                <div style="margin: 20px 0;">
+                <div style="margin: 15px 0;">
                     <label for="char-name" style="display: block; margin-bottom: 5px; font-weight: bold; color: #00f2ff;">KOD ADI:</label>
-                    <input type="text" id="char-name" class="cyber-input" style="width: 100%; padding: 12px; background: #001a33; border: 2px solid #00f2ff; color: white; border-radius: 8px; font-size: 18px;" placeholder="Adınızı yazın...">
-                    <button id="btn-check" style="margin-top: 10px; padding: 5px 10px; background: none; border: 1px solid #00f2ff; color: #00f2ff; cursor: pointer; font-size: 12px;">MEVCUT HESABI YÜKLE</button>
+                    <input type="text" id="char-name" class="cyber-input" style="width: 100%; padding: 12px; background: #001a33; border: 2px solid #00f2ff; color: white; border-radius: 8px; font-size: 18px;" placeholder="Adınızı yazın..." maxlength="15">
+                    <button id="btn-check" style="margin-top: 8px; padding: 6px 12px; background: none; border: 1px solid #00f2ff; color: #00f2ff; cursor: pointer; font-size: 12px; border-radius: 4px;">MEVCUT HESABI YÜKLE</button>
+                    ${accountsHtml}
                 </div>
 
                 <div id="customization-area">
-                    <div style="margin: 20px 0;">
+                    <div style="margin: 15px 0;">
                         <label style="display: block; margin-bottom: 10px; font-weight: bold; color: #00f2ff;">RENK SEÇİMİ:</label>
                         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                             ${['blue', 'green', 'orange', 'red', 'pink', 'brown', 'grey'].map(c => 
@@ -77,17 +100,17 @@ export class CharacterCreationScene extends Phaser.Scene {
                         </div>
                     </div>
 
-                    <div style="margin: 20px 0;">
+                    <div style="margin: 15px 0;">
                         <label for="char-type" style="display: block; margin-bottom: 10px; font-weight: bold; color: #00f2ff;">BALIK TÜRÜ:</label>
-                        <select id="char-type" class="cyber-input" style="width: 100%; padding: 12px; background: #001a33; border: 2px solid #00f2ff; color: white; border-radius: 8px; cursor: pointer;">
+                        <select id="char-type" class="cyber-input" style="width: 100%; padding: 10px; background: #001a33; border: 2px solid #00f2ff; color: white; border-radius: 8px; cursor: pointer;">
                             <option value="standard">Standart</option>
                             <option value="skeleton">İskelet</option>
                         </select>
                     </div>
                 </div>
 
-                <button id="btn-save" class="cyber-button" style="width: 100%; padding: 15px; background: #f3ff00; color: #001a33; border: none; font-weight: bold; font-size: 20px; border-radius: 10px; cursor: pointer; margin-top: 15px;">GÖREVİ BAŞLAT</button>
-                <div id="status-msg" style="margin-top: 10px; text-align: center; font-size: 14px; color: #f3ff00;"></div>
+                <button id="btn-save" class="cyber-button" style="width: 100%; padding: 14px; background: #f3ff00; color: #001a33; border: none; font-weight: bold; font-size: 18px; border-radius: 10px; cursor: pointer; margin-top: 10px;">GÖREVİ BAŞLAT</button>
+                <div id="status-msg" style="margin-top: 10px; text-align: center; font-size: 13px; color: #f3ff00;"></div>
             </div>
         `;
 
@@ -106,6 +129,17 @@ export class CharacterCreationScene extends Phaser.Scene {
             this.updatePreview();
         };
 
+        // Click on a saved account tag
+        document.querySelectorAll('.saved-acc-btn').forEach(btn => {
+            btn.onclick = () => {
+                const nameInput = document.getElementById('char-name');
+                if (nameInput) {
+                    nameInput.value = btn.dataset.name;
+                    document.getElementById('btn-check').click();
+                }
+            };
+        });
+
         // Existing Account Login
         document.getElementById('btn-check').onclick = async () => {
             const name = document.getElementById('char-name').value.trim();
@@ -117,8 +151,8 @@ export class CharacterCreationScene extends Phaser.Scene {
             const profile = await loginWithCodename(name);
             if (profile) {
                 msg.style.color = '#00ff00';
-                msg.innerText = 'Hesap bulundu! Yönlendiriliyorsunuz...';
-                this.time.delayedCall(1500, () => {
+                msg.innerText = 'Hesap yüklendi! Kampüse geçiliyor...';
+                this.time.delayedCall(800, () => {
                     overlay.innerHTML = '';
                     this.scene.start('HubScene');
                 });
@@ -135,12 +169,12 @@ export class CharacterCreationScene extends Phaser.Scene {
             
             const isUnique = await checkCodenameUnique(name);
             if (!isUnique) {
-                alert('Bu kod adı zaten alınmış! Lütfen başka bir ad seçin veya hesabınızı yükleyin.');
+                alert('Bu kod adı zaten alınmış! Lütfen başka bir ad seçin veya mevcut hesabı yükleyin.');
                 return;
             }
 
             const profileData = { color: this.selectedColor, type: this.selectedType };
-            overlay.innerHTML = '<div class="hud-panel" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #f3ff00; font-size: 24px; font-weight: bold;">AKADEMİYE KAYDOLUNUYOR...</div>';
+            overlay.innerHTML = '<div class="hud-panel" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #f3ff00; font-size: 22px; font-weight: bold;">AKADEMİYE GİRİLİYOR...</div>';
             
             const profile = await createProfile(name, 'fish', profileData);
             if (profile) {

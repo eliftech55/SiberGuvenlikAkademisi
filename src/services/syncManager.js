@@ -1,15 +1,21 @@
-import { supabase } from './supabase';
-import { getLocalProfile } from './authService';
+import { supabase, isOnline, withTimeout } from './supabase.js';
+import { getLocalProfile } from './authService.js';
 
 const QUEUE_KEY = 'cyber_offline_queue';
 
 const getQueue = () => {
-    const q = localStorage.getItem(QUEUE_KEY);
-    return q ? JSON.parse(q) : [];
+    try {
+        const q = localStorage.getItem(QUEUE_KEY);
+        return q ? JSON.parse(q) : [];
+    } catch (e) {
+        return [];
+    }
 };
 
 const saveQueue = (queue) => {
-    localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    try {
+        localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    } catch (e) {}
 };
 
 export const enqueueAction = (action, payload) => {
@@ -29,13 +35,13 @@ export const saveProgress = async (gameId, score, status = 'completed') => {
 
     const payload = { game_id: gameId, score, status, user_id: profile.id };
 
-    if (!navigator.onLine || profile.offlineOnly) {
+    if (!navigator.onLine || !isOnline() || profile.offlineOnly) {
         enqueueAction('saveProgress', payload);
         return;
     }
 
     try {
-        const { error } = await supabase.from('user_progress').upsert([payload]);
+        const { error } = await withTimeout(supabase.from('user_progress').upsert([payload]), 2000);
         if (error) throw error;
     } catch (e) {
         enqueueAction('saveProgress', payload);
@@ -48,13 +54,13 @@ export const awardBadge = async (badgeId) => {
 
     const payload = { badge_id: badgeId, user_id: profile.id };
 
-    if (!navigator.onLine || profile.offlineOnly) {
+    if (!navigator.onLine || !isOnline() || profile.offlineOnly) {
         enqueueAction('awardBadge', payload);
         return;
     }
 
     try {
-        const { error } = await supabase.from('user_badges').insert([payload]);
+        const { error } = await withTimeout(supabase.from('user_badges').insert([payload]), 2000);
         if (error && error.code !== '23505') throw error; // Ignore duplicate
     } catch (e) {
         enqueueAction('awardBadge', payload);
@@ -62,7 +68,7 @@ export const awardBadge = async (badgeId) => {
 };
 
 export const syncOfflineData = async () => {
-    if (!navigator.onLine) return;
+    if (!navigator.onLine || !isOnline()) return;
 
     const queue = getQueue();
     if (queue.length === 0) return;
@@ -75,12 +81,12 @@ export const syncOfflineData = async () => {
     for (const item of queue) {
         try {
             if (item.action === 'saveProgress') {
-                await supabase.from('user_progress').upsert([item.payload]);
+                await withTimeout(supabase.from('user_progress').upsert([item.payload]), 2000);
             } else if (item.action === 'awardBadge') {
-                await supabase.from('user_badges').insert([item.payload]);
+                await withTimeout(supabase.from('user_badges').insert([item.payload]), 2000);
             }
         } catch (e) {
-            if (e.code !== '23505') remainingQueue.push(item);
+            if (e?.code !== '23505') remainingQueue.push(item);
         }
     }
 
@@ -88,5 +94,9 @@ export const syncOfflineData = async () => {
 };
 
 // Listen for online event
-window.addEventListener('online', syncOfflineData);
-setInterval(syncOfflineData, 30000); // Periodic sync check
+window.addEventListener('online', () => {
+    if (isOnline()) syncOfflineData();
+});
+setInterval(() => {
+    if (isOnline()) syncOfflineData();
+}, 30000);

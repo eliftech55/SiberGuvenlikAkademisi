@@ -26,14 +26,14 @@ export class URLSurf extends MiniGameScene {
         this.lives = 3;
         this.currentLevel = 1;
         this.badUrlsHit = 0;
-        this.totalBadNeeded = 10;
+        this.totalBadNeeded = 5;
         this.score = 0;
         this.isGameOver = false;
         this.lastFired = 0;
 
         // UI (Shifted down to avoid header)
         this.levelText = this.add.text(width / 2, 110, 'SEVİYE: 1', { fontSize: '24px', fill: '#00f2ff', fontStyle: 'bold' }).setOrigin(0.5).setDepth(2100);
-        this.progressText = this.add.text(width / 2, 140, 'Hedef: 0/10 Zararlı URL', { fontSize: '18px', fill: '#ffffff' }).setOrigin(0.5).setDepth(2100);
+        this.progressText = this.add.text(width / 2, 140, `Hedef: 0/${this.totalBadNeeded} Zararlı URL`, { fontSize: '18px', fill: '#ffffff' }).setOrigin(0.5).setDepth(2100);
         this.livesText = this.add.text(width - 220, 120, 'CAN: ❤️❤️❤️', { fontSize: '22px', fill: '#ff0000', fontStyle: 'bold' }).setDepth(2100);
 
         // Controls
@@ -51,7 +51,7 @@ export class URLSurf extends MiniGameScene {
 
         // Spawner
         this.spawnEvent = this.time.addEvent({
-            delay: 2500,
+            delay: 1800,
             callback: () => this.spawnTarget(),
             loop: true
         });
@@ -141,7 +141,7 @@ export class URLSurf extends MiniGameScene {
             this.updateScore(37);
             this.badUrlsHit++;
             this.showFloatingText(target.x, target.y, "+37", "#00ff00");
-            this.progressText.setText(`Hedef: ${this.badUrlsHit}/10 Zararlı URL`);
+            this.progressText.setText(`Hedef: ${this.badUrlsHit}/${this.totalBadNeeded} Zararlı URL`);
             this.sound.play('sfx_correct', { volume: 0.4 });
             
             if (this.badUrlsHit >= this.totalBadNeeded) {
@@ -168,13 +168,14 @@ export class URLSurf extends MiniGameScene {
             return;
         }
 
+        const { width, height } = this.cameras.main;
         this.currentLevel++;
         this.badUrlsHit = 0;
         this.levelText.setText(`SEVİYE: ${this.currentLevel}`);
-        this.progressText.setText(`Hedef: 0/10 Zararlı URL`);
+        this.progressText.setText(`Hedef: 0/${this.totalBadNeeded} Zararlı URL`);
         
         // Visual Feedback for Level Up
-        const levelUp = this.add.text(512, 384, `SEVİYE ${this.currentLevel} BAŞLIYOR!`, {
+        const levelUp = this.add.text(width / 2, height / 2, `SEVİYE ${this.currentLevel} BAŞLIYOR!`, {
             fontSize: '48px', fill: '#f3ff00', fontStyle: 'bold', stroke: '#000', strokeThickness: 6
         }).setOrigin(0.5).setDepth(2500);
         
@@ -182,7 +183,7 @@ export class URLSurf extends MiniGameScene {
         this.sound.play('sfx_bubble', { volume: 0.8 });
 
         // Speed up spawn rate
-        this.spawnEvent.delay = 2500 / (this.currentLevel * 0.9);
+        this.spawnEvent.delay = 1800 / (this.currentLevel * 0.9);
     }
 
     fireLaser() {
@@ -218,7 +219,8 @@ export class URLSurf extends MiniGameScene {
     gameOver() {
         this.isGameOver = true;
         this.physics.pause();
-        this.add.text(512, 384, 'OYUN BİTTİ!', { fontSize: '64px', fill: '#ff0000', fontStyle: 'bold' }).setOrigin(0.5).setDepth(3000);
+        const { width, height } = this.cameras.main;
+        this.add.text(width / 2, height / 2, 'OYUN BİTTİ!', { fontSize: '64px', fill: '#ff0000', fontStyle: 'bold' }).setOrigin(0.5).setDepth(3000);
         this.time.delayedCall(2500, () => this.scene.start('HubScene'));
     }
 
