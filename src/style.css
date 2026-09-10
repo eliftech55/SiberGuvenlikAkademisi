@@ -405,3 +405,47 @@ body {
     transform: scale(1.02);
     box-shadow: 0 0 20px var(--cyber-blue);
 }
+
+/* Speech Bubble Tooltip Styles */
+/* HTML: <div class="tooltip">This is the same as #5 but with another shape for the tail </div> */
+.tooltip {
+  color: #fff;
+  font-size: 18px;
+  max-width: 28ch;
+  text-align: center;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 600;
+  line-height: 1.35;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
+}
+.tooltip { 
+  --b: 3em; /* tail dimension */
+
+  --p: 49%;  /* main position (0%:left 100%:right) */
+  --r: 1.2em; /* the radius */
+
+  padding: 1em;
+  border-radius: var(--r) var(--r) min(var(--r),100% - var(--p) - var(--b)/4) min(var(--r),var(--p) - var(--b)/4)/var(--r);
+  background: #cc333f; /* the main color */
+  position: relative;
+}
+.tooltip:before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: clamp(0%,var(--p) - var(--b)/4,100% - var(--b)/2);
+  width: var(--b);
+  aspect-ratio: 1;
+  background: inherit;
+  --g:#000 calc(100% - 1px),#0000;
+  -webkit-mask: 
+    radial-gradient(circle closest-side at 88% 88%,var(--g)),
+    radial-gradient(20% 20% at 48% 55%,var(--g)),
+    radial-gradient(25% 25% at 25% 0,var(--g));
+  mask: 
+    radial-gradient(circle closest-side at 88% 88%,var(--g)),
+    radial-gradient(20% 20% at 48% 55%,var(--g)),
+    radial-gradient(25% 25% at 25% 0,var(--g));
+}

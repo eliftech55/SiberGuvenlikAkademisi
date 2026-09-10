@@ -83,43 +83,33 @@ export class MiniGameScene extends Phaser.Scene {
     }
 
     showGuideMessage(text) {
-        if (this.activeBubble) this.activeBubble.destroy();
+        if (this.activeBubble) {
+            this.activeBubble.destroy();
+            this.activeBubble = null;
+        }
         this.sound.play('sfx_bubble', { volume: 0.6 });
 
-        const bubbleWidth = 250;
-        const bubbleHeight = 80;
-        const { width } = this.cameras.main;
+        const bx = 170;
+        const by = this.guideFish ? this.guideFish.y - 110 : 550;
 
-        // Calculate horizontal position - keep it on screen
-        let bx = this.guideFish.x - bubbleWidth / 2;
-        if (bx < 10) bx = 10;
-        if (bx + bubbleWidth > width - 10) bx = width - bubbleWidth - 10;
+        this.activeBubble = this.add.dom(bx, by).createFromHTML(`
+            <div class="tooltip" style="--p: 26%; font-size: 16px;">${text}</div>
+        `);
+        this.activeBubble.setDepth(200);
 
-        const by = this.guideFish.y - 120;
-
-        this.activeBubble = this.add.container(bx, by);
-        this.activeBubble.setDepth(105);
-
-        const graphics = this.add.graphics();
-        graphics.fillStyle(0xffffff, 1).lineStyle(3, 0x00f2ff, 1);
-        graphics.fillRoundedRect(0, 0, bubbleWidth, bubbleHeight, 10);
-        graphics.strokeRoundedRect(0, 0, bubbleWidth, bubbleHeight, 10);
-        
-        // Triangle pointing down to guide fish
-        // Find local X of fish relative to container
-        const localFishX = this.guideFish.x - bx;
-        graphics.fillTriangle(localFishX - 10, bubbleHeight, localFishX + 10, bubbleHeight, localFishX, bubbleHeight + 15);
-        graphics.strokeTriangle(localFishX - 10, bubbleHeight, localFishX + 10, bubbleHeight, localFishX, bubbleHeight + 15);
-
-        const content = this.add.text(bubbleWidth / 2, bubbleHeight / 2, text, {
-            fontSize: '15px', color: '#000000', align: 'center', fontStyle: 'bold', wordWrap: { width: bubbleWidth - 20 }
-        }).setOrigin(0.5);
-
-        this.activeBubble.add([graphics, content]);
-
-        this.time.delayedCall(5000, () => {
+        this.time.delayedCall(6000, () => {
             if (this.activeBubble) {
-                this.tweens.add({ targets: this.activeBubble, alpha: 0, duration: 500, onComplete: () => this.activeBubble?.destroy() });
+                this.tweens.add({ 
+                    targets: this.activeBubble, 
+                    alpha: 0, 
+                    duration: 500, 
+                    onComplete: () => {
+                        if (this.activeBubble) {
+                            this.activeBubble.destroy();
+                            this.activeBubble = null;
+                        }
+                    }
+                });
             }
         });
     }
@@ -136,10 +126,9 @@ export class MiniGameScene extends Phaser.Scene {
             });
         }
 
-        // If guide bubble exists, keep it slightly above the guide fish in case of animation
+        // If guide bubble exists, keep it slightly above the guide fish
         if (this.activeBubble && this.guideFish) {
-            this.activeBubble.y = this.guideFish.y - 140;
-            this.activeBubble.x = this.guideFish.x - 125; // Keep bubble centered horizontally
+            this.activeBubble.y = this.guideFish.y - 110;
         }
     }
 

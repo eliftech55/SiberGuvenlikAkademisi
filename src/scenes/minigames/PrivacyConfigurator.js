@@ -92,9 +92,8 @@ export class PrivacyConfigurator extends MiniGameScene {
         overlay.innerHTML = `
             <!-- DOM-based Guide Fish (Always on Top) -->
             <div id="dom-guide-wrapper" style="position: absolute; bottom: 20px; left: 20px; z-index: 2000; pointer-events: none; display: flex; flex-direction: column; align-items: center;">
-                <div id="dom-guide-bubble" style="background: white; border: 3px solid #00f2ff; border-radius: 15px; padding: 12px; width: 220px; color: black; font-size: 14px; font-weight: bold; position: relative; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: none;">
+                <div id="dom-guide-bubble" class="tooltip" style="display: none; margin-bottom: 35px; font-size: 15px;">
                     <span id="dom-guide-text"></span>
-                    <div style="position: absolute; bottom: -13px; left: 20px; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #00f2ff;"></div>
                 </div>
                 <img src="${fishImg}" style="width: 80px; height: auto; filter: drop-shadow(0 0 10px ${colorMap[fishColor]});">
             </div>
@@ -307,7 +306,7 @@ export class PrivacyConfigurator extends MiniGameScene {
         if (bubble && content) {
             content.innerText = text;
             bubble.style.display = 'block';
-            bubble.style.alpha = '1';
+            bubble.style.opacity = '1';
             
             // Auto-hide after 6 seconds
             if (this.bubbleTimer) clearTimeout(this.bubbleTimer);

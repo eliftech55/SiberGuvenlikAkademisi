@@ -30,7 +30,7 @@ export class HubScene extends Phaser.Scene {
         this.createBubbles(width, height);
 
         // 2. Player Fish
-        this.player = this.physics.add.sprite(width / 2, 150, 'fish_atlas', this.getFishFrame(fishData));
+        this.player = this.physics.add.sprite(width / 2, 240, 'fish_atlas', this.getFishFrame(fishData));
         this.player.setCollideWorldBounds(true);
         this.player.setScale(1.5);
         this.player.setDrag(1000);
@@ -47,7 +47,7 @@ export class HubScene extends Phaser.Scene {
         });
 
         // 5. Speech Bubble
-        this.createSpeechBubble("Siber Güvenlik Akademisine hoş geldin! Ben senin rehberinim. Yemleri toplayarak eğitimlere başlayabilirsin!");
+        this.createSpeechBubble("Yön tuşları ile beni yönlendirerek bir oyun seçebilirsin.");
 
         // 6. Global UI Integration
         uiService.setCurrentScene(this.scene.key);
@@ -56,8 +56,9 @@ export class HubScene extends Phaser.Scene {
         // Listen for global fish updates
         window.addEventListener('fish-updated', () => this.updatePlayerSprite());
 
-        // 7. Controls
+        // 7. Controls (Arrow keys + WASD)
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.wasd = this.input.keyboard.addKeys('W,A,S,D', true, false);
 
         this.add.text(width / 2, 90, 'SİBER GÜVENLİK AKADEMİSİ', {
             fontSize: '40px', fill: '#f3ff00', fontStyle: 'bold', stroke: '#000000', strokeThickness: 8
@@ -81,29 +82,18 @@ export class HubScene extends Phaser.Scene {
     }
 
     createSpeechBubble(text) {
-        const bubbleWidth = 300;
-        const bubbleHeight = 80;
-        const arrowHeight = 15;
+        if (this.activeBubble) {
+            this.activeBubble.destroy();
+            this.activeBubble = null;
+        }
 
-        this.activeBubble = this.add.container(this.player.x, this.player.y - 100);
-        this.activeBubble.setDepth(100);
+        const bubbleX = this.player ? this.player.x : 640;
+        const bubbleY = this.player ? this.player.y - 100 : 150;
 
-        const graphics = this.add.graphics();
-        graphics.fillStyle(0x000000, 0.3);
-        graphics.fillRoundedRect(5, 5, bubbleWidth, bubbleHeight, 16);
-        graphics.fillStyle(0xffffff, 1);
-        graphics.lineStyle(3, 0x00f2ff, 1);
-        graphics.fillRoundedRect(0, 0, bubbleWidth, bubbleHeight, 16);
-        graphics.strokeRoundedRect(0, 0, bubbleWidth, bubbleHeight, 16);
-
-        graphics.fillTriangle(bubbleWidth / 2 - 10, bubbleHeight, bubbleWidth / 2 + 10, bubbleHeight, bubbleWidth / 2, bubbleHeight + arrowHeight);
-        graphics.strokeTriangle(bubbleWidth / 2 - 10, bubbleHeight, bubbleWidth / 2 + 10, bubbleHeight, bubbleWidth / 2, bubbleHeight + arrowHeight);
-
-        const content = this.add.text(bubbleWidth / 2, bubbleHeight / 2, text, {
-            fontFamily: 'Arial', fontSize: 14, color: '#000000', align: 'center', wordWrap: { width: bubbleWidth - 20 }
-        }).setOrigin(0.5);
-
-        this.activeBubble.add([graphics, content]);
+        this.activeBubble = this.add.dom(bubbleX, bubbleY).createFromHTML(`
+            <div class="tooltip">${text}</div>
+        `);
+        this.activeBubble.setDepth(200);
 
         this.time.delayedCall(8000, () => {
             if (this.activeBubble) {
@@ -111,7 +101,12 @@ export class HubScene extends Phaser.Scene {
                     targets: this.activeBubble,
                     alpha: 0,
                     duration: 500,
-                    onComplete: () => { if (this.activeBubble) this.activeBubble.destroy(); this.activeBubble = null; }
+                    onComplete: () => {
+                        if (this.activeBubble) {
+                            this.activeBubble.destroy();
+                            this.activeBubble = null;
+                        }
+                    }
                 });
             }
         });
@@ -186,20 +181,20 @@ export class HubScene extends Phaser.Scene {
         body.setVelocity(0);
 
         let isMoving = false;
-        if (this.cursors.left.isDown) { body.setVelocityX(-speed); this.player.setFlipX(true); isMoving = true; }
-        else if (this.cursors.right.isDown) { body.setVelocityX(speed); this.player.setFlipX(false); isMoving = true; }
+        if (this.cursors.left.isDown || this.wasd?.A?.isDown) { body.setVelocityX(-speed); this.player.setFlipX(true); isMoving = true; }
+        else if (this.cursors.right.isDown || this.wasd?.D?.isDown) { body.setVelocityX(speed); this.player.setFlipX(false); isMoving = true; }
 
-        if (this.cursors.up.isDown) { body.setVelocityY(-speed); isMoving = true; }
-        else if (this.cursors.down.isDown) { body.setVelocityY(speed); isMoving = true; }
+        if (this.cursors.up.isDown || this.wasd?.W?.isDown) { body.setVelocityY(-speed); isMoving = true; }
+        else if (this.cursors.down.isDown || this.wasd?.S?.isDown) { body.setVelocityY(speed); isMoving = true; }
 
         if (isMoving && (!this.lastMoveSoundTime || time - this.lastMoveSoundTime > 400)) {
             this.sound.play('sfx_swim', { volume: 0.25 });
             this.lastMoveSoundTime = time;
         }
 
-        if (this.activeBubble) {
-            this.activeBubble.x = this.player.x - 150;
-            this.activeBubble.y = this.player.y - 110;
+        if (this.activeBubble && this.player) {
+            this.activeBubble.x = Phaser.Math.Clamp(this.player.x, 170, 1110);
+            this.activeBubble.y = Math.max(140, this.player.y - 100);
         }
 
         this.bgCliffs.tilePositionX += 0.4;
