@@ -92,7 +92,7 @@ export class PrivacyConfigurator extends MiniGameScene {
         overlay.innerHTML = `
             <!-- DOM-based Guide Fish (Always on Top) -->
             <div id="dom-guide-wrapper" style="position: absolute; bottom: 20px; left: 20px; z-index: 2000; pointer-events: none; display: flex; flex-direction: column; align-items: center;">
-                <div id="dom-guide-bubble" class="tooltip" style="display: none; margin-bottom: 35px; font-size: 15px;">
+                <div id="dom-guide-bubble" class="container arrow-down" style="--arrow-left: calc(50% - 11px); display: none; margin-bottom: 25px; font-size: 15px;">
                     <span id="dom-guide-text"></span>
                 </div>
                 <img src="${fishImg}" style="width: 80px; height: auto; filter: drop-shadow(0 0 10px ${colorMap[fishColor]});">

@@ -47,7 +47,16 @@ export class URLSurf extends MiniGameScene {
 
         // Global Collisions
         this.physics.add.overlap(this.laserGroup, this.urlGroup, (laser, target) => this.handleHit(laser, target));
-        this.physics.add.overlap(this.guideFish, this.urlGroup, (player, target) => this.handlePlayerCollision(target));
+        this.physics.add.overlap(this.guideFish, this.urlGroup, (player, target) => {
+            // Check if player actually touched the FISH body, NOT the speech bubble above it!
+            // target.y is the fish center. The speech bubble is at target.y - 65.
+            const dy = Math.abs(player.y - target.y);
+            const dx = Math.abs(player.x - target.x);
+            // Only take damage if directly colliding with the fish body (not the bubble)
+            if (dy < 32 && dx < 45) {
+                this.handlePlayerCollision(target);
+            }
+        });
 
         // Spawner
         this.spawnEvent = this.time.addEvent({
@@ -87,18 +96,22 @@ export class URLSurf extends MiniGameScene {
         const bubbleWidth = 240;
         const bubbleHeight = 45;
         const bubble = this.add.rectangle(0, -65, bubbleWidth, bubbleHeight, 0xffffff, 1);
-        bubble.setStrokeStyle(6, data.safe ? 0x00ff00 : 0xff0000);
+        bubble.setStrokeStyle(5, data.safe ? 0x00ff00 : 0xff0000);
+        
+        const pointer = this.add.triangle(0, -42, -7, 0, 7, 0, 0, 8, data.safe ? 0x00ff00 : 0xff0000, 1);
         
         const text = this.add.text(0, -65, data.text, { fontSize: '14px', fill: '#000000', fontStyle: 'bold' }).setOrigin(0.5);
-        container.add([fish, bubble, text]);
+        container.add([fish, bubble, pointer, text]);
 
         this.physics.add.existing(container);
         container.body.setAllowGravity(false);
-        // Circle body is much more reliable for overlap detection
-        container.body.setCircle(70, -70, -70); 
+        // Cover container for laser hits (player collision specifically checks fish body distance)
+        container.body.setSize(240, 110);
+        container.body.setOffset(-120, -90);
         
         const duration = 7000 / (this.currentLevel * 0.8);
         
+        // Horizontal swim movement
         this.tweens.add({
             targets: container,
             x: -300,
@@ -114,6 +127,16 @@ export class URLSurf extends MiniGameScene {
                     container.destroy();
                 }
             }
+        });
+
+        // Vertical wavy movement so fish and speech bubble move up and down together!
+        this.tweens.add({
+            targets: container,
+            y: y + Phaser.Math.Between(-30, 30),
+            duration: 1600,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
         });
 
         this.urlGroup.add(container);

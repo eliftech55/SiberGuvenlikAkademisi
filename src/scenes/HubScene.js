@@ -88,10 +88,10 @@ export class HubScene extends Phaser.Scene {
         }
 
         const bubbleX = this.player ? this.player.x : 640;
-        const bubbleY = this.player ? this.player.y - 100 : 150;
+        const bubbleY = this.player ? this.player.y - 85 : 150;
 
         this.activeBubble = this.add.dom(bubbleX, bubbleY).createFromHTML(`
-            <div class="tooltip">${text}</div>
+            <div class="container arrow-down" style="--arrow-left: calc(50% - 11px);">${text}</div>
         `);
         this.activeBubble.setDepth(200);
 
@@ -194,7 +194,7 @@ export class HubScene extends Phaser.Scene {
 
         if (this.activeBubble && this.player) {
             this.activeBubble.x = Phaser.Math.Clamp(this.player.x, 170, 1110);
-            this.activeBubble.y = Math.max(140, this.player.y - 100);
+            this.activeBubble.y = Math.max(120, this.player.y - 85);
         }
 
         this.bgCliffs.tilePositionX += 0.4;

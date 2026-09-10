@@ -89,11 +89,11 @@ export class MiniGameScene extends Phaser.Scene {
         }
         this.sound.play('sfx_bubble', { volume: 0.6 });
 
-        const bx = 170;
-        const by = this.guideFish ? this.guideFish.y - 110 : 550;
+        const bx = this.guideFish ? Phaser.Math.Clamp(this.guideFish.x, 150, this.cameras.main.width - 150) : 170;
+        const by = this.guideFish ? this.guideFish.y - 85 : 550;
 
         this.activeBubble = this.add.dom(bx, by).createFromHTML(`
-            <div class="tooltip" style="--p: 26%; font-size: 16px;">${text}</div>
+            <div class="container arrow-down" style="--arrow-left: calc(50% - 11px);">${text}</div>
         `);
         this.activeBubble.setDepth(200);
 
@@ -126,9 +126,10 @@ export class MiniGameScene extends Phaser.Scene {
             });
         }
 
-        // If guide bubble exists, keep it slightly above the guide fish
+        // If guide bubble exists, keep it tracking the guide fish position accurately (both X and Y)
         if (this.activeBubble && this.guideFish) {
-            this.activeBubble.y = this.guideFish.y - 110;
+            this.activeBubble.x = Phaser.Math.Clamp(this.guideFish.x, 150, this.cameras.main.width - 150);
+            this.activeBubble.y = Phaser.Math.Clamp(this.guideFish.y - 85, 70, this.cameras.main.height - 40);
         }
     }
 

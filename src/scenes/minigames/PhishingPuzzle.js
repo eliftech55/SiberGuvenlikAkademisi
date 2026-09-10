@@ -43,6 +43,13 @@ export class PhishingPuzzle extends MiniGameScene {
 
         // Collision Logic
         this.physics.add.overlap(this.guideFish, this.targetFishes, (player, target) => {
+            // Only collide with the fish body, NOT the speech bubble above it!
+            const dy = Math.abs(player.y - target.y);
+            if (dy > 35) {
+                // Touched speech bubble area - ignore collision (no penalty / yanma)!
+                return;
+            }
+
             const data = target.getData('urlData');
             if (data.isSafe) {
                 this.updateScore(100);
