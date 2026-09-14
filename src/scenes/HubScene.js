@@ -64,10 +64,6 @@ export class HubScene extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.wasd = this.input.keyboard.addKeys('W,A,S,D', true, false);
 
-        this.add.text(width / 2, 90, 'SİBER GÜVENLİK AKADEMİSİ', {
-            fontSize: '40px', fill: '#f3ff00', fontStyle: 'bold', stroke: '#000000', strokeThickness: 8
-        }).setOrigin(0.5).setDepth(20);
-
         // 8. Onboarding Trigger Check (First login or completed_games == 0)
         this.time.delayedCall(600, () => {
             onboardingService.start(false);
