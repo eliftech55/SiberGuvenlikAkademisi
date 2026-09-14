@@ -23,6 +23,22 @@ export class EmailSimulator extends MiniGameScene {
         this.createBaseUI('Güvenli E-posta Simülatörü');
         const { width, height } = this.cameras.main;
 
+        // Position avatar fish prominently on the left side, completely clear of the email table
+        if (this.guideFish) {
+            this.tweens.killTweensOf(this.guideFish);
+            this.guideFish.setPosition(160, height - 160);
+            this.guideFish.setScale(1.8);
+            this.guideFish.setDepth(150);
+            this.tweens.add({
+                targets: this.guideFish,
+                y: height - 190,
+                duration: 2200,
+                ease: 'Sine.easeInOut',
+                yoyo: true,
+                loop: -1
+            });
+        }
+
         if (this.currentPhase === 1) {
             this.showCreationPhase();
         } else {
@@ -36,9 +52,9 @@ export class EmailSimulator extends MiniGameScene {
         const overlay = document.getElementById('ui-overlay');
         overlay.style.pointerEvents = 'all';
         overlay.innerHTML = `
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; padding: 40px; background: rgba(0, 15, 30, 0.95); border: 3px solid #00f2ff; border-radius: 20px; color: white; text-align: center;">
-                <h2 style="color: #f3ff00;">E-POSTA OLUŞTUR</h2>
-                <p style="font-size: 14px; margin-bottom: 20px;">Akademi sistemine giriş için kurumsal bir e-posta adresi belirle.</p>
+            <div style="position: absolute; top: 50%; right: 60px; transform: translateY(-50%); width: 440px; padding: 40px; background: rgba(0, 15, 30, 0.95); border: 3px solid #00f2ff; border-radius: 20px; color: white; text-align: center; box-shadow: 0 0 35px rgba(0, 242, 255, 0.25);">
+                <h2 style="color: #f3ff00; margin-bottom: 10px;">E-POSTA OLUŞTUR</h2>
+                <p style="font-size: 14px; margin-bottom: 20px; color: #ccc;">Akademi sistemine giriş için kurumsal bir e-posta adresi belirle.</p>
                 <input type="text" id="email-input" placeholder="ornek@akademi.edu.tr" style="width: 100%; padding: 12px; background: #001a33; border: 2px solid #00f2ff; color: white; border-radius: 8px; font-size: 16px; margin-bottom: 20px;">
                 <button id="btn-create-email" class="cyber-button" style="width: 100%; padding: 15px; background: #00f2ff; color: #000; font-weight: bold; border: none; border-radius: 10px; cursor: pointer;">HESABI OLUŞTUR</button>
                 <div id="email-error" style="color: #ff4444; margin-top: 10px; font-size: 12px;"></div>
@@ -78,18 +94,18 @@ export class EmailSimulator extends MiniGameScene {
         const overlay = document.getElementById('ui-overlay');
         overlay.style.pointerEvents = 'all';
         overlay.innerHTML = `
-            <div id="email-app" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 900px; height: 600px; background: rgba(0, 10, 20, 0.98); border: 2px solid #00f2ff; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);">
+            <div id="email-app" style="position: absolute; top: 15px; right: 35px; width: min(720px, calc(100% - 320px)); height: calc(100% - 30px); max-height: 590px; background: rgba(0, 10, 20, 0.98); border: 2px solid #00f2ff; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 35px rgba(0, 242, 255, 0.25);">
                 <!-- Header -->
-                <div style="background: rgba(0, 242, 255, 0.1); padding: 15px 25px; border-bottom: 1px solid #00f2ff; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span style="font-size: 24px;">📬</span>
-                        <span style="font-weight: bold; color: #00f2ff;">GELEN KUTUSU (${this.userEmail})</span>
+                <div style="background: rgba(0, 242, 255, 0.1); padding: 12px 20px; border-bottom: 1px solid #00f2ff; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 22px;">📬</span>
+                        <span style="font-weight: bold; color: #00f2ff; font-size: 15px;">GELEN KUTUSU (${this.userEmail})</span>
                     </div>
-                    <div style="font-size: 14px; color: #f3ff00; font-weight: bold;">SKOR: ${this.score} | İNCELENEN: ${this.processedCount}/${this.targetCount}</div>
+                    <div style="font-size: 13px; color: #f3ff00; font-weight: bold;">SKOR: ${this.score} | İNCELENEN: ${this.processedCount}/${this.targetCount}</div>
                 </div>
                 
                 <!-- Email List -->
-                <div id="inbox-list" style="flex: 1; overflow-y: auto; padding: 10px;">
+                <div id="inbox-list" style="flex: 1; overflow-y: auto; padding: 8px;">
                     ${this.renderEmailList()}
                 </div>
             </div>
@@ -102,11 +118,11 @@ export class EmailSimulator extends MiniGameScene {
         return this.emails.map((email, idx) => {
             if (email.processed) return '';
             return `
-                <div class="email-row" data-idx="${idx}" style="display: flex; align-items: center; padding: 12px 20px; border-bottom: 1px solid rgba(0,242,255,0.1); cursor: pointer; transition: background 0.2s; background: rgba(255,255,255,0.03);">
-                    <div style="margin-right: 15px; font-size: 20px;">✉️</div>
-                    <div style="width: 200px; font-weight: bold; color: #f3ff00; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${email.sender}</div>
-                    <div style="flex: 1; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 20px;">${email.subject}</div>
-                    <div style="color: #888; font-size: 12px;">Bugün</div>
+                <div class="email-row" data-idx="${idx}" style="display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid rgba(0,242,255,0.1); cursor: pointer; transition: background 0.2s; background: rgba(255,255,255,0.03);">
+                    <div style="margin-right: 12px; font-size: 20px;">✉️</div>
+                    <div style="width: 170px; font-weight: bold; color: #f3ff00; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px;">${email.sender}</div>
+                    <div style="flex: 1; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 12px; font-size: 14px;">${email.subject}</div>
+                    <div style="color: #888; font-size: 12px; flex-shrink: 0;">Bugün</div>
                 </div>
             `;
         }).join('');
@@ -127,23 +143,23 @@ export class EmailSimulator extends MiniGameScene {
     showEmailDetail(email, index) {
         const overlay = document.getElementById('ui-overlay');
         const detailHtml = `
-            <div id="email-detail-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100;">
-                <div style="width: 550px; background: #001a33; border: 3px solid #f3ff00; border-radius: 15px; overflow: hidden; box-shadow: 0 0 50px rgba(243, 255, 0, 0.3);">
-                    <div style="background: rgba(243, 255, 0, 0.1); padding: 15px 25px; border-bottom: 1px solid #f3ff00; display: flex; justify-content: space-between;">
-                        <span style="color: #f3ff00; font-weight: bold;">E-POSTA AYRINTISI</span>
-                        <button id="close-detail" style="background: none; border: none; color: #ff4444; font-size: 24px; cursor: pointer;">✕</button>
+            <div id="email-detail-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: flex; justify-content: center; align-items: center; z-index: 100; padding: 15px;">
+                <div style="width: 92%; max-width: 520px; background: #001a33; border: 3px solid #f3ff00; border-radius: 15px; overflow: hidden; box-shadow: 0 0 40px rgba(243, 255, 0, 0.3);">
+                    <div style="background: rgba(243, 255, 0, 0.1); padding: 12px 20px; border-bottom: 1px solid #f3ff00; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #f3ff00; font-weight: bold; font-size: 15px;">E-POSTA AYRINTISI</span>
+                        <button id="close-detail" style="background: none; border: none; color: #ff4444; font-size: 24px; cursor: pointer; line-height: 1;">✕</button>
                     </div>
-                    <div style="padding: 30px;">
-                        <div style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
-                            <div style="margin-bottom: 5px;"><span style="color: #00f2ff;">GÖNDEREN:</span> ${email.sender}</div>
-                            <div><span style="color: #00f2ff;">KONU:</span> ${email.subject}</div>
+                    <div style="padding: 22px;">
+                        <div style="margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; font-size: 14px;">
+                            <div style="margin-bottom: 5px;"><span style="color: #00f2ff; font-weight: bold;">GÖNDEREN:</span> ${email.sender}</div>
+                            <div><span style="color: #00f2ff; font-weight: bold;">KONU:</span> ${email.subject}</div>
                         </div>
-                        <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 8px; margin-bottom: 30px; line-height: 1.6; font-size: 15px; min-height: 120px; border-left: 4px solid #00f2ff;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 8px; margin-bottom: 22px; line-height: 1.5; font-size: 14px; min-height: 90px; border-left: 4px solid #00f2ff; color: #eee;">
                             ${email.body}
                         </div>
                         <div style="display: flex; gap: 15px;">
-                            <button id="btn-safe" class="cyber-button" style="flex: 1; background: #00ff00; color: #000; border: none;">GÜVENLİ</button>
-                            <button id="btn-risky" class="cyber-button" style="flex: 1; background: #ff0000; color: #fff; border: none;">GÜVENLİ DEĞİL</button>
+                            <button id="btn-safe" class="cyber-button" style="flex: 1; background: #00e676; color: #000; border: none; font-weight: bold; padding: 10px;">GÜVENLİ</button>
+                            <button id="btn-risky" class="cyber-button" style="flex: 1; background: #ff1744; color: #fff; border: none; font-weight: bold; padding: 10px;">GÜVENLİ DEĞİL</button>
                         </div>
                     </div>
                 </div>
