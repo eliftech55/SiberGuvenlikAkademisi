@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { getLocalProfile } from '../services/authService';
 import { uiService } from '../services/uiService';
 import { audioService } from '../services/audioService';
+import { onboardingService } from '../services/onboardingService';
 
 export class HubScene extends Phaser.Scene {
     constructor() {
@@ -32,6 +33,13 @@ export class HubScene extends Phaser.Scene {
         this.player.setDrag(1000);
         this.player.setDepth(10);
 
+        // Click on avatar to manually trigger onboarding guide
+        this.player.setInteractive({ useHandCursor: true });
+        this.player.on('pointerdown', (pointer, localX, localY, event) => {
+            if (event && event.stopPropagation) event.stopPropagation();
+            onboardingService.start(true);
+        });
+
         // 3. Mini-Games
         this.baitGroup = this.physics.add.group();
         this.createBaits(profile);
@@ -59,6 +67,11 @@ export class HubScene extends Phaser.Scene {
         this.add.text(width / 2, 90, 'SİBER GÜVENLİK AKADEMİSİ', {
             fontSize: '40px', fill: '#f3ff00', fontStyle: 'bold', stroke: '#000000', strokeThickness: 8
         }).setOrigin(0.5).setDepth(20);
+
+        // 8. Onboarding Trigger Check (First login or completed_games == 0)
+        this.time.delayedCall(600, () => {
+            onboardingService.start(false);
+        });
     }
 
     getFishFrame(fishData) {
@@ -171,10 +184,16 @@ export class HubScene extends Phaser.Scene {
     }
 
     update(time, delta) {
-        const speed = 350;
-        const body = this.player.body;
+        const body = this.player ? this.player.body : null;
         if (!body) return;
         body.setVelocity(0);
+
+        // Pause controls during active onboarding guide
+        if (window.isOnboardingActive) {
+            return;
+        }
+
+        const speed = 350;
 
         let isMoving = false;
         if (this.cursors.left.isDown || this.wasd?.A?.isDown) { body.setVelocityX(-speed); this.player.setFlipX(true); isMoving = true; }

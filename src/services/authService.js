@@ -34,6 +34,7 @@ export const getLocalProfile = () => {
             profile.xp = profile.xp || 0;
             profile.level = profile.level || 1;
             profile.metaData = profile.metaData || { color: 'blue', type: 'standard' };
+            profile.onboardingCompleted = profile.onboardingCompleted || false;
         }
         return profile;
     } catch (e) {
@@ -99,6 +100,7 @@ export const createProfile = async (codename, avatarType = 'fish', metaData = {}
         level: 1,
         badges: [],
         completedGames: [],
+        onboardingCompleted: false,
         created_at: new Date().toISOString()
     };
 
@@ -272,3 +274,57 @@ export const updateMetaData = (metaData) => {
         }).catch(console.warn);
     } catch (e) {}
 };
+
+/**
+ * Onboarding durumunu tamamlandı olarak işaretler (LocalStorage + Firestore).
+ */
+export const markOnboardingCompleted = (codename) => {
+    const profile = getLocalProfile();
+    if (profile) {
+        profile.onboardingCompleted = true;
+        saveLocalProfile(profile);
+    }
+    const name = codename || profile?.codename;
+    if (name) {
+        localStorage.setItem(`caq_onboarding_${name.toLowerCase()}`, 'true');
+        sessionStorage.setItem(`caq_onboarding_dismissed_${name.toLowerCase()}`, 'true');
+    }
+    try {
+        if (profile?.codename) {
+            const docId = profile.codename.toLowerCase();
+            updateDoc(doc(db, 'profiles', docId), {
+                onboardingCompleted: true
+            }).catch(console.warn);
+        }
+    } catch (e) {}
+};
+
+/**
+ * Onboarding sürecinin tetiklenip tetiklenmeyeceğini denetler.
+ * Şart: SADECE ilk kez giriş yapıyorsa VEYA completed_games == 0 ise.
+ * ya da forceManual=true olduğunda (ör. balığa tıklandığında).
+ */
+export const shouldShowOnboarding = (forceManual = false) => {
+    if (forceManual) return true;
+    const profile = getLocalProfile();
+    if (!profile || !profile.codename) return false;
+
+    const lowerName = profile.codename.toLowerCase();
+    
+    // Oturum içinde zaten izlendiyse/kapatıldıysa her sahne değişiminde tekrar zorlama
+    const sessionDismissed = sessionStorage.getItem(`caq_onboarding_dismissed_${lowerName}`) === 'true';
+    if (sessionDismissed) return false;
+
+    const completedCount = (profile.completedGames && Array.isArray(profile.completedGames)) ? profile.completedGames.length : 0;
+    const localFlag = localStorage.getItem(`caq_onboarding_${lowerName}`);
+    const isCompleted = profile.onboardingCompleted === true || localFlag === 'true';
+
+    // Şart: SADECE kullanıcı "ilk kez giriş yapıyorsa" (!isCompleted) 
+    // VEYA "daha önce hiç oyun tamamlamadıysa" (completedCount == 0)
+    if (!isCompleted || completedCount === 0) {
+        return true;
+    }
+
+    return false;
+};
+

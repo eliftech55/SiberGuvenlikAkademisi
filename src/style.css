@@ -467,3 +467,338 @@ body {
 .tooltip.arrow-down::after {
   border-top-color: #ffffff;
 }
+
+/* ============================================================
+   ONBOARDING (SİBERBALIK REHBERİ) STYLES
+   ============================================================ */
+.onboarding-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(4, 10, 22, 0.82);
+    backdrop-filter: blur(5px);
+    z-index: 3500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: all;
+    animation: fadeIn 0.3s ease-out forwards;
+    padding: 20px;
+}
+
+.onboarding-overlay.closing {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.onboarding-card-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    max-width: 780px;
+    width: 100%;
+    position: relative;
+    z-index: 3510;
+}
+
+/* Mascot CyberFish */
+.onboarding-mascot-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    animation: mascotFloat 3.2s ease-in-out infinite;
+}
+
+.onboarding-mascot-img {
+    width: 135px;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(0, 242, 255, 0.8));
+    transform-origin: center;
+    user-select: none;
+    pointer-events: none;
+}
+
+.mascot-hologram-ring {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 2px dashed var(--cyber-blue);
+    animation: rotateHolo 12s linear infinite;
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.mascot-badge-pill {
+    margin-top: 10px;
+    background: rgba(0, 242, 255, 0.18);
+    border: 1px solid var(--cyber-blue);
+    color: var(--cyber-blue);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+    user-select: none;
+}
+
+/* Onboarding Speech Bubble */
+.onboarding-speech-bubble {
+    flex: 1;
+    max-width: 580px;
+    background: #ffffff !important;
+    border: 2px solid var(--cyber-blue) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 12px 40px rgba(0, 242, 255, 0.25), 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+    padding: 22px 26px !important;
+    text-align: left !important;
+    pointer-events: all !important;
+    user-select: text !important;
+}
+
+/* Arrow pointing left to the mascot */
+.onboarding-speech-bubble::before,
+.onboarding-speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: auto !important;
+    top: 50px !important;
+    left: -22px !important;
+    border: 11px solid transparent !important;
+    border-right-color: var(--cyber-blue) !important;
+    border-bottom-color: transparent !important;
+}
+
+.onboarding-speech-bubble::after {
+    left: -19px !important;
+    border: 10px solid transparent !important;
+    border-right-color: #ffffff !important;
+    border-bottom-color: transparent !important;
+}
+
+.onboarding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eef2f5;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+}
+
+.onboarding-badge {
+    font-size: 13px;
+    font-weight: 800;
+    color: #007799;
+    letter-spacing: 0.5px;
+}
+
+.onboarding-step-counter {
+    background: #e6f7ff;
+    color: #0088aa;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 12px;
+    border: 1px solid #b5e8ff;
+}
+
+.onboarding-close-x {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.2s;
+    padding: 0 4px;
+}
+
+.onboarding-close-x:hover {
+    color: #ff3366;
+    transform: scale(1.2);
+}
+
+.onboarding-text {
+    font-size: 16px;
+    color: #1a1a24;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    font-weight: 500;
+}
+
+.onboarding-text b {
+    color: #005577;
+    font-weight: 700;
+}
+
+.onboarding-hint-box {
+    background: #f0faff;
+    border-left: 4px solid var(--cyber-blue);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #334455;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.onboarding-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.onboarding-dots {
+    display: flex;
+    gap: 7px;
+}
+
+.onboarding-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d4dbe0;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.onboarding-dot.active {
+    background: var(--cyber-blue);
+    transform: scale(1.4);
+    box-shadow: 0 0 8px var(--cyber-blue);
+}
+
+.onboarding-actions-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.onboarding-btn {
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.onboarding-btn.primary {
+    background: #00b4d8;
+    color: white;
+    padding: 9px 20px;
+    font-size: 14px;
+    box-shadow: 0 3px 12px rgba(0, 180, 216, 0.35);
+}
+
+.onboarding-btn.primary:hover {
+    background: #0096c7;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(0, 180, 216, 0.5);
+}
+
+.onboarding-btn.primary.pulse-glow {
+    background: #00c853;
+    box-shadow: 0 0 20px rgba(0, 200, 83, 0.6);
+    animation: buttonPulse 1.5s infinite;
+}
+
+.onboarding-btn.secondary {
+    background: #f4f6f8;
+    color: #495057;
+    border: 1px solid #ced4da;
+    padding: 8px 14px;
+    font-size: 13px;
+}
+
+.onboarding-btn.secondary:hover {
+    background: #e9ecef;
+}
+
+.onboarding-btn.text-link {
+    background: transparent;
+    color: #778899;
+    font-size: 13px;
+    padding: 6px 8px;
+}
+
+.onboarding-btn.text-link:hover {
+    color: #222;
+    text-decoration: underline;
+}
+
+/* Spotlight Highlight for Target UI Elements */
+.onboarding-spotlight {
+    position: relative !important;
+    z-index: 3600 !important;
+    box-shadow: 0 0 0 4px var(--cyber-yellow), 0 0 35px var(--cyber-blue), 0 0 60px rgba(0, 242, 255, 0.7) !important;
+    border-radius: 8px !important;
+    animation: spotlightPulse 1.6s ease-in-out infinite !important;
+    pointer-events: none !important;
+    transition: all 0.3s ease !important;
+}
+
+@keyframes mascotFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-12px) rotate(2deg);
+    }
+}
+
+@keyframes rotateHolo {
+    from {
+        transform: translateX(-50%) rotate(0deg);
+    }
+    to {
+        transform: translateX(-50%) rotate(360deg);
+    }
+}
+
+@keyframes spotlightPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 4px var(--cyber-yellow), 0 0 25px var(--cyber-blue);
+    }
+    50% {
+        transform: scale(1.04);
+        box-shadow: 0 0 0 6px var(--cyber-yellow), 0 0 45px var(--cyber-blue), 0 0 75px rgba(0, 242, 255, 0.85);
+    }
+}
+
+@keyframes buttonPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .onboarding-card-wrapper {
+        flex-direction: column;
+        gap: 16px;
+    }
+    .onboarding-speech-bubble::before,
+    .onboarding-speech-bubble::after {
+        display: none;
+    }
+}
+
