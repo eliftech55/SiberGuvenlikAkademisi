@@ -1,4 +1,4 @@
-﻿import { getLocalProfile, markOnboardingCompleted, shouldShowOnboarding } from './authService.js';
+import { getLocalProfile, markOnboardingCompleted, shouldShowOnboarding } from './authService.js';
 
 class OnboardingService {
     constructor() {
@@ -26,7 +26,7 @@ class OnboardingService {
                 id: 'first_game',
                 badge: '🎮 İLK OYUNUN & GÖREVLER',
                 text: 'Hazırsanız akademideki <b>ilk oyununuzu</b> oynayabilirsiniz! Su altındaki parlayan yemlere doğru yüzerek görevleri başlat.',
-                target: '#game-container',
+                target: null,
                 hint: 'Yön (Ok) veya W, A, S, D tuşlarını kullanarak özgürce yüzebilirsin.'
             },
             {
@@ -208,7 +208,7 @@ class OnboardingService {
             this.activeSpotlightElement = null;
         }
 
-        if (!selector) return;
+        if (!selector || selector === '#game-container') return;
 
         const el = document.querySelector(selector);
         if (el) {

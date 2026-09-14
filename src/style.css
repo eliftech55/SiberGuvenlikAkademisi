@@ -477,9 +477,9 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(4, 10, 22, 0.82);
-    backdrop-filter: blur(5px);
-    z-index: 3500;
+    background: rgba(4, 10, 22, 0.78);
+    backdrop-filter: blur(4px);
+    z-index: 4000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -500,7 +500,7 @@ body {
     max-width: 780px;
     width: 100%;
     position: relative;
-    z-index: 3510;
+    z-index: 6000 !important;
 }
 
 /* Mascot CyberFish */
@@ -740,12 +740,12 @@ body {
 /* Spotlight Highlight for Target UI Elements */
 .onboarding-spotlight {
     position: relative !important;
-    z-index: 3600 !important;
-    box-shadow: 0 0 0 4px var(--cyber-yellow), 0 0 35px var(--cyber-blue), 0 0 60px rgba(0, 242, 255, 0.7) !important;
+    z-index: 4500 !important;
+    box-shadow: 0 0 0 3px var(--cyber-yellow), 0 0 25px var(--cyber-blue), 0 0 45px rgba(0, 242, 255, 0.7) !important;
     border-radius: 8px !important;
     animation: spotlightPulse 1.6s ease-in-out infinite !important;
     pointer-events: none !important;
-    transition: all 0.3s ease !important;
+    transition: box-shadow 0.3s ease !important;
 }
 
 @keyframes mascotFloat {
@@ -768,12 +768,10 @@ body {
 
 @keyframes spotlightPulse {
     0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 4px var(--cyber-yellow), 0 0 25px var(--cyber-blue);
+        box-shadow: 0 0 0 3px var(--cyber-yellow), 0 0 20px var(--cyber-blue);
     }
     50% {
-        transform: scale(1.04);
-        box-shadow: 0 0 0 6px var(--cyber-yellow), 0 0 45px var(--cyber-blue), 0 0 75px rgba(0, 242, 255, 0.85);
+        box-shadow: 0 0 0 5px var(--cyber-yellow), 0 0 35px var(--cyber-blue), 0 0 55px rgba(0, 242, 255, 0.85);
     }
 }
 
