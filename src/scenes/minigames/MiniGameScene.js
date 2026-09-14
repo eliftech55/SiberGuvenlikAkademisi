@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { getLocalProfile, awardBadge, completeGame } from '../../services/authService';
 import { uiService } from '../../services/uiService';
+import { audioService } from '../../services/audioService';
 
 export class MiniGameScene extends Phaser.Scene {
     constructor(key) {
@@ -17,6 +18,9 @@ export class MiniGameScene extends Phaser.Scene {
     }
 
     createBaseUI(title) {
+        // Ensure background music continues seamlessly in minigames
+        audioService.playBGM();
+
         const { width, height } = this.cameras.main;
         const profile = getLocalProfile();
         const fishData = profile?.metaData || { color: 'blue', type: 'standard' };

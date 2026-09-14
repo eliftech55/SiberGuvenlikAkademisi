@@ -52,11 +52,14 @@ const config = {
 };
 
 import { uiService } from './services/uiService';
+import { audioService } from './services/audioService';
 
 const game = new Phaser.Game(config);
 window.phaserGame = game;
+window.audioService = audioService;
 
-// Initialize Global UI
+// Initialize Background Audio & Global UI
+audioService.init();
 uiService.init();
 
 // Global sound reference for UI slider

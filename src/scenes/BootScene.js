@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { getLocalProfile } from '../services/authService';
+import { audioService } from '../services/audioService';
 
 export class BootScene extends Phaser.Scene {
     constructor() {
@@ -66,13 +67,15 @@ export class BootScene extends Phaser.Scene {
         this.load.audio('sfx_bubble', 'assets/sounds/bubble.ogg');
         this.load.audio('sfx_move', 'assets/sounds/move.ogg');
         this.load.audio('sfx_swim', 'assets/sounds/swim.mp3');
-        this.load.audio('bg_ocean', 'assets/sounds/ocean.mp3');
         this.load.audio('sfx_message', 'assets/sounds/message.mp3');
         this.load.audio('sfx_sent_message', 'assets/sounds/sent-message.mp3');
         this.load.audio('sfx_level_up', 'assets/sounds/level-up.mp3');
     }
 
     create() {
+        // Start background ambient music
+        audioService.playBGM();
+
         // Resume audio context on first interaction
         this.input.once('pointerdown', () => {
             if (this.sound.context.state === 'suspended') {

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { getLocalProfile } from '../services/authService';
 import { uiService } from '../services/uiService';
+import { audioService } from '../services/audioService';
 
 export class HubScene extends Phaser.Scene {
     constructor() {
@@ -9,13 +10,8 @@ export class HubScene extends Phaser.Scene {
     }
 
     create() {
-        // Start background music if not already playing
-        if (!this.sound.getAllPlaying().find(s => s.key === 'bg_ocean')) {
-            this.sound.play('bg_ocean', { 
-                loop: true, 
-                volume: localStorage.getItem('caq_volume') !== null ? parseFloat(localStorage.getItem('caq_volume')) : 0.3 
-            });
-        }
+        // Start background ambient music
+        audioService.playBGM();
 
         const { width, height } = this.cameras.main;
         const profile = getLocalProfile();

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { createProfile, checkCodenameUnique, getLocalProfile } from '../services/authService';
+import { audioService } from '../services/audioService';
 
 export class LoginScene extends Phaser.Scene {
     constructor() {
@@ -7,16 +8,11 @@ export class LoginScene extends Phaser.Scene {
     }
 
     create() {
+        // Start background ambient music
+        audioService.playBGM();
+
         // If already has profile, skip to Hub
         const profile = getLocalProfile();
-
-        // Start background music if not already playing
-        if (!this.sound.getAllPlaying().find(s => s.key === 'bg_ocean')) {
-            this.sound.play('bg_ocean', { 
-                loop: true, 
-                volume: localStorage.getItem('caq_volume') !== null ? parseFloat(localStorage.getItem('caq_volume')) : 0.3 
-            });
-        }
 
         if (profile) {
             this.scene.start('HubScene');

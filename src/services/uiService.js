@@ -1,4 +1,5 @@
 import { getLocalProfile, logout, getLeaderboard, updateMetaData } from './authService.js';
+import { audioService } from './audioService.js';
 
 class UIService {
     constructor() {
@@ -104,6 +105,7 @@ class UIService {
         console.log("UIService: Global UI Initialized");
         this.setupEventListeners();
         this.updateHeader();
+        audioService.syncUI();
     }
 
     setCurrentScene(sceneKey) {
@@ -258,8 +260,14 @@ class UIService {
         if (volSlider) {
             volSlider.oninput = (e) => {
                 const vol = parseFloat(e.target.value);
-                if (window.gameSoundManager) window.gameSoundManager.setVolume(vol);
-                localStorage.setItem('caq_volume', vol);
+                audioService.setVolume(vol);
+            };
+        }
+
+        const volIcon = document.getElementById('vol-icon');
+        if (volIcon) {
+            volIcon.onclick = () => {
+                audioService.toggleMute();
             };
         }
     }

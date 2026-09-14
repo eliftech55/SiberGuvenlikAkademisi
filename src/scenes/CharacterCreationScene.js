@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { createProfile, checkCodenameUnique, loginWithCodename, getLocalProfile, getAllLocalAccounts } from '../services/authService';
+import { audioService } from '../services/audioService';
 
 export class CharacterCreationScene extends Phaser.Scene {
     constructor() {
@@ -9,6 +10,9 @@ export class CharacterCreationScene extends Phaser.Scene {
     }
 
     create() {
+        // Start background ambient music
+        audioService.playBGM();
+
         // If user already has a profile, jump straight to Hub
         const existing = getLocalProfile();
         if (existing && existing.codename) {
