@@ -775,14 +775,38 @@ body {
     text-decoration: underline;
 }
 
-/* Spotlight Highlight for Target UI Elements */
+/* ============================================================
+   ONBOARDING ACTIVE HEADER SPOTLIGHT INTEGRATION
+   ============================================================ */
+body.onboarding-active #global-header {
+    z-index: 4500 !important;
+}
+
+body.onboarding-active #global-header .header-item,
+body.onboarding-active #global-header .header-button,
+body.onboarding-active #global-header .volume-control,
+body.onboarding-active #global-header .header-center {
+    opacity: 0.32;
+    filter: brightness(0.55);
+    transition: opacity 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Highlighted element in header shines with 100% brightness and glowing neon */
+body.onboarding-active #global-header .header-item.onboarding-spotlight,
+body.onboarding-active #global-header .header-button.onboarding-spotlight,
+body.onboarding-active #global-header .volume-control.onboarding-spotlight,
 .onboarding-spotlight {
     position: relative !important;
-    z-index: 4500 !important;
-    box-shadow: 0 0 0 3px var(--cyber-yellow), 0 0 25px var(--cyber-blue), 0 0 45px rgba(0, 242, 255, 0.7) !important;
+    z-index: 4600 !important;
+    opacity: 1 !important;
+    filter: brightness(1.25) !important;
+    background: rgba(243, 255, 0, 0.22) !important;
+    border-color: var(--cyber-yellow) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 3px var(--cyber-yellow), 0 0 30px var(--cyber-blue), 0 0 60px rgba(243, 255, 0, 0.85) !important;
     border-radius: 8px !important;
-    animation: spotlightPulse 1.6s ease-in-out infinite !important;
-    pointer-events: none !important;
+    animation: spotlightPulse 1.5s ease-in-out infinite !important;
+    pointer-events: all !important;
     transition: box-shadow 0.3s ease !important;
 }
 

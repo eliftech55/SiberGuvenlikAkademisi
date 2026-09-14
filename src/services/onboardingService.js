@@ -69,6 +69,7 @@ class OnboardingService {
 
         this.isActive = true;
         window.isOnboardingActive = true;
+        document.body.classList.add('onboarding-active');
         this.currentStepIndex = 0;
 
         // Play feedback sound if phaser is ready
@@ -251,6 +252,7 @@ class OnboardingService {
     close() {
         this.isActive = false;
         window.isOnboardingActive = false;
+        document.body.classList.remove('onboarding-active');
 
         // Clear spotlight
         if (this.activeSpotlightElement) {
